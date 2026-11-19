@@ -32,15 +32,6 @@ local function mkdir(path)
   util.run("if not exist " .. path .. " mkdir " .. path)
 end
 
-local function copy_file(source, destination)
-  util.run("copy /Y " .. quote(source) .. " " .. quote(destination))
-end
-
--- cmd's own `copy` expands the wildcard, so quoting the whole spec is safe.
-local function copy_glob(directory, pattern, destination)
-  util.run("copy /Y " .. quote(path_join(directory, pattern)) .. " " .. quote(destination))
-end
-
 -- PowerShell string literal (single-quoted), backslashes are literal.
 local function ps_quote(value)
   return "'" .. tostring(value):gsub("'", "''") .. "'"
@@ -67,6 +58,7 @@ function win.run(ctx)
     "$ErrorActionPreference = 'Stop'",
     "Import-Module -Name " .. ps_quote(path_join(module_dir, "ClojureTools.psd1")) .. " -Force",
     "Invoke-Clojure @args",
+    "exit $LASTEXITCODE",
     "",
   }, CRLF)
   util.write_file(shim, shim_body, true)

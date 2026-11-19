@@ -1,14 +1,13 @@
 local util = {}
 
---- Platform facts. `package.config`'s first character is the OS directory
---- separator: "/" on POSIX and "\" on Windows.
+--- Platform facts, from vfox's `RUNTIME` global.
 ---
 --- Kept here rather than in a module of its own so every hook can call it
 --- without pulling in the network stack below. `http`/`json` are therefore
 --- required lazily, inside the version-fetching functions, so that install
 --- and env hooks (which only need `is_windows`) stay dependency-free.
 function util.is_windows()
-  return package.config:sub(1, 1) ~= "/"
+  return RUNTIME.osType == "windows"
 end
 
 local function split_version(version)
